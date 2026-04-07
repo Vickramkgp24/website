@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Light Engineering (Pte Ltd) – Singapore</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -47,9 +48,6 @@
       cursor: pointer; transition: background 0.2s;
     }
     .nav-cta:hover { background: var(--blue-dark); }
-
-    /* ── DEVELOPER ONLY UI ── */
-    .dev-only { display: none !important; }
 
     /* ── HERO ── */
     .hero {
@@ -101,7 +99,6 @@
     }
     .btn-hero-outline:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.07); }
 
-    /* hero right panel */
     .hero-info-card {
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
       border-radius: var(--radius-lg); padding: 32px 28px;
@@ -134,6 +131,8 @@
     .section-header-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:52px; flex-wrap:wrap; gap:20px; }
 
     .services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+
+    /* ── SERVICE CARD with RIBBON support ── */
     .service-card {
       background:var(--white); border:1px solid rgba(0,0,0,0.06);
       border-radius:var(--radius); padding:28px 22px;
@@ -147,6 +146,45 @@
     }
     .service-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(26,95,168,0.12); border-color:rgba(26,95,168,0.15); }
     .service-card:hover::after { transform:scaleX(1); }
+
+    /* ── RIBBON ── */
+    .ribbon-wrap {
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 80px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .ribbon-label {
+      position: absolute;
+      top: 18px; right: -22px;
+      width: 100px;
+      background: var(--accent);
+      color: var(--blue-dark);
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 5px 0;
+      transform: rotate(45deg);
+    }
+    .ribbon-label.ribbon-new {
+      background: #22c55e;
+      color: #fff;
+    }
+    .ribbon-label.ribbon-popular {
+      background: var(--accent);
+      color: var(--blue-dark);
+    }
+    .ribbon-label.ribbon-hot {
+      background: #ef4444;
+      color: #fff;
+    }
+   
+
     .service-icon {
       width:48px; height:48px; border-radius:12px;
       background:var(--blue-pale); display:flex; align-items:center; justify-content:center;
@@ -156,24 +194,75 @@
     .service-card h3 { font-family:'Syne',sans-serif; font-size:14.5px; font-weight:600; color:var(--blue-dark); margin-bottom:8px; }
     .service-card p { font-size:13px; color:var(--text-muted); line-height:1.6; }
 
-    /* ── GALLERY ── */
-    .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-    .gallery-slot {
-      background:var(--blue-pale); border-radius:var(--radius);
-      height:200px; display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:10px;
-      border:2px dashed rgba(26,95,168,0.25); cursor:default;
-      transition:border-color 0.2s, background 0.2s;
-      position:relative; overflow:hidden;
+    /* ── SLIDESHOW GALLERY ── */
+    .slideshow-container {
+      position: relative;
+      max-width: 860px;
+      margin: 0 auto;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(7,48,92,0.18);
     }
-    /* Hover effects only added via JS for Devs */
-    .gallery-slot.dev-active { cursor: pointer; }
-    .gallery-slot.dev-active:hover { border-color:var(--blue-mid); background:#d9ebfa; }
-    
-    .gallery-slot svg { width:28px; height:28px; stroke:var(--blue-mid); fill:none; stroke-width:1.5; opacity:0.5; }
-    .gallery-slot p { font-size:12px; color:var(--blue-mid); opacity:0.7; }
-    .gallery-slot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:var(--radius); }
-    #gallery-upload { display:none; }
+    .slide {
+      display: none;
+      position: relative;
+    }
+    .slide.active { display: block; }
+    .slide img {
+      width: 100%;
+      height: 460px;
+      object-fit: cover;
+      display: block;
+    }
+    .slide-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(7,48,92,0.85));
+      color: var(--white);
+      padding: 40px 28px 24px;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+    }
+    /* Prev / Next arrows */
+    .slide-btn {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.18);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      color: var(--white);
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      z-index: 10;
+      transition: background 0.2s;
+      backdrop-filter: blur(4px);
+      user-select: none;
+    }
+    .slide-btn:hover { background: rgba(255,255,255,0.32); }
+    .slide-prev { left: 16px; }
+    .slide-next { right: 16px; }
+    /* Dots */
+    .slide-dots {
+      display: flex; justify-content: center; gap: 8px;
+      margin-top: 20px;
+    }
+    .slide-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(26,95,168,0.25);
+      cursor: pointer;
+      transition: background 0.25s, transform 0.25s;
+      border: none;
+    }
+    .slide-dot.active {
+      background: var(--blue-mid);
+      transform: scale(1.3);
+    }
+    /* Fade animation */
+    @keyframes slideFade { from { opacity: 0; } to { opacity: 1; } }
+    .slide.active { animation: slideFade 0.5s ease; }
 
     /* ── ABOUT ── */
     .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; }
@@ -188,7 +277,6 @@
     .about-visual-sub { font-size:13px; color:rgba(255,255,255,0.45); letter-spacing:1px; text-transform:uppercase; position:relative; }
     .about-visual-img { width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; position:relative; }
     .about-visual-img svg { width:36px; height:36px; stroke:var(--accent); fill:none; stroke-width:1.5; }
-
     .about-content p { font-size:15px; color:var(--text-mid); line-height:1.8; margin-bottom:18px; }
     .check-list { list-style:none; display:flex; flex-direction:column; gap:10px; margin-top:8px; }
     .check-list li { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:var(--text-mid); }
@@ -213,14 +301,13 @@
     .contact-form-card h3 { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--blue-dark); margin-bottom:24px; }
     .form-group { margin-bottom:16px; }
     .form-label { font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; display:block; font-weight:500; }
-    .form-input, .form-textarea, .form-select {
+    .form-input, .form-textarea {
       width:100%; padding:11px 14px;
       border:1px solid rgba(0,0,0,0.1); border-radius:8px;
       font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark);
       background:var(--surface); transition:border-color 0.2s;
     }
     .form-textarea { height:100px; resize:none; }
-    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .form-submit {
       width:100%; padding:13px; border-radius:9px; border:none;
       background:var(--blue-mid); color:var(--white);
@@ -228,13 +315,10 @@
       cursor:pointer; transition:background 0.2s, transform 0.15s;
       margin-top:6px;
     }
+    .form-submit:hover { background: var(--blue-dark); }
 
     /* ── FOOTER ── */
-    footer { background:var(--blue-dark); color:var(--white); padding:64px 48px 28px; }
-    .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:48px; margin-bottom:48px; }
-    .footer-brand-name { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; margin-bottom:10px; }
-    .footer-brand-name span { color:var(--accent); }
-    .footer-col a { display:block; font-size:13.5px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:10px; transition:color 0.2s; cursor:pointer; }
+    footer { background:var(--blue-dark); color:var(--white); padding:40px 48px 28px; }
     .footer-bottom { border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; display:flex; justify-content:space-between; align-items:center; }
     .footer-uen { font-size:12px; color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.07); padding:5px 12px; border-radius:6px; }
 
@@ -249,9 +333,9 @@
       .hero h1 { font-size:38px; }
       .stats-band { grid-template-columns:repeat(2,1fr); }
       .section { padding: 64px 24px; }
-      .about-grid, .contact-grid, .footer-grid { grid-template-columns:1fr; }
+      .about-grid, .contact-grid { grid-template-columns:1fr; }
       .services-grid { grid-template-columns:repeat(2,1fr); }
-      .gallery-grid { grid-template-columns:repeat(2,1fr); }
+      .slide img { height: 260px; }
     }
   </style>
 </head>
@@ -323,39 +407,33 @@
     
     <div class="services-grid">
 
-      <div class="service-card">
+      <div class="service-card" data-aos="flip-up">
+        <div class="ribbon-wrap"><div class="ribbon-label ribbon-popular">&#x1F397;</div></div>
         <div class="service-icon">
-          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M21 16V8a2 2 0 00-1.73-1.97l-7-1a2 2 0 00-1.54.33l-7 5A2 2 0 003 12v8a2 2 0 002 2h14a2 2 0 002-2zM7 11l5-3.5 5 3.5m-10 4h10M7 18h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <h3>Electrical Work</h3>
-        <p>Full electrical installations, wiring, DB upgrades, and troubleshooting for all property types.</p>
+        <h3>RC Work</h3>
+        <p>Professional Reinforced Concrete works including structural framing, slabs, and foundation reinforcement.</p>
       </div>
 
-      <div class="service-card">
+      <div class="service-card" data-aos="flip-up">
+        <div class="ribbon-wrap"><div class="ribbon-label ribbon-popular">&#x1F397;</div></div>
         <div class="service-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12h3m14 0h3M12 2v3m0 14v3M5.6 5.6l2.1 2.1m8.6 8.6l2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6l2.1-2.1"/></svg>
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="13" y="3" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="3" y="13" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="13" y="13" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
         </div>
-        <h3>Fiber Optical Laying And Termination</h3>
-        <p>Professional fiber optic cable installation, splicing, and termination services.</p>
+        <h3>Tiling Work</h3>
+        <p>High-quality floor and wall tiling for bathrooms, kitchens, and commercial spaces with precision finishing.</p>
       </div>
 
-      <div class="service-card">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        </div>
-        <h3>Data Communication & Networking System</h3>
-        <p>Structured cabling, LAN/WAN network setup, and complete data communication systems.</p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>
-        </div>
-        <h3>Aircon & Aircon Ducking Work</h3>
-        <p>Aircon installation, ductwork design and installation, and maintenance solutions.</p>
-      </div>
-
-      <div class="service-card">
+      <div class="service-card" data-aos="flip-up">
+        <div class="ribbon-wrap"><div class="ribbon-label ribbon-popular">&#x1F397;</div></div>
         <div class="service-icon">
           <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
         </div>
@@ -363,7 +441,41 @@
         <p>Controlled and safe demolition services for renovation and construction project sites.</p>
       </div>
 
-      <div class="service-card">
+      <div class="service-card" data-aos="flip-up">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Electrical Work</h3>
+        <p>Full electrical installations, wiring, DB upgrades, and troubleshooting for all property types.</p>
+      </div>
+
+      <div class="service-card" data-aos="flip-up">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12h3m14 0h3M12 2v3m0 14v3M5.6 5.6l2.1 2.1m8.6 8.6l2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6l2.1-2.1"/></svg>
+        </div>
+        <h3>Fiber Optical Laying And Termination</h3>
+        <p>Professional fiber optic cable installation, splicing, and termination services.</p>
+      </div>
+
+      <div class="service-card" data-aos="flip-up">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h3>Data Communication & Networking System</h3>
+        <p>Structured cabling, LAN/WAN network setup, and complete data communication systems.</p>
+      </div>
+
+      <div class="service-card" data-aos="flip-up">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>
+        </div>
+        <h3>Aircon & Aircon Ducking Work</h3>
+        <p>Aircon installation, ductwork design and installation, and maintenance solutions.</p>
+      </div>
+
+      
+
+      <div class="service-card" data-aos="flip-up">
         <div class="service-icon">
           <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
         </div>
@@ -371,7 +483,7 @@
         <p>Professional plastering, skim coating, and interior/exterior painting services.</p>
       </div>
 
-      <div class="service-card">
+      <div class="service-card" data-aos="flip-up">
         <div class="service-icon">
           <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         </div>
@@ -379,18 +491,17 @@
         <p>Custom metal fabrication including frames, grilles, gates, and structural steelwork.</p>
       </div>
 
-      <div class="service-card">
+      <div class="service-card" data-aos="flip-up">
         <div class="service-icon">
           <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
         </div>
-        <h3>CCTV and Card Access Installation and Troubleshooting</h3>
+        <h3>CCTV and Access Control</h3>
         <p>Complete CCTV surveillance systems and card access control installation and troubleshooting.</p>
       </div>
 
-    </div>
-  </div>
-</section>
+    </div> </div> </section>
 
+<!-- ── GALLERY SLIDESHOW ── -->
 <section class="section section-alt" id="gallery">
   <div class="section-inner">
     <div class="section-header-row">
@@ -399,26 +510,42 @@
         <div class="section-title">Project Gallery</div>
         <div class="section-sub">Showcasing our precision engineering and on-site excellence.</div>
       </div>
-      <button id="dev-upload-btn" class="nav-cta dev-only" onclick="document.getElementById('gallery-upload').click()">+ Upload Photos</button>
     </div>
-    
-    <div class="gallery-grid" id="gallery-grid">
-  <div class="gallery-slot">
-    <img src="img_1.jpeg" alt="Electrical Installation">
-  </div>
 
-  <div class="gallery-slot">
-    <img src="img_2.jpeg" alt="Fiber Optic Splicing">
-  </div>
+    <div class="slideshow-container">
+      <div class="slide active">
+        <img src="img_13.jpeg" alt="Electrical Installation" />
+        <div class="slide-caption">Demolition</div>
+      </div>
+      <div class="slide">
+        <img src="img_2.jpeg" alt="Fiber Optic Splicing" />
+        <div class="slide-caption">Tiling Work</div>
+      </div>
+      <div class="slide">
+        <img src="img_3.jpeg" alt="CCTV Installation" />
+        <div class="slide-caption">Tiling Work</div>
+      </div>
+      <div class="slide">
+        <img src="img_6.jpeg" alt="CCTV Installation" />
+        <div class="slide-caption">Reinforced Concrete</div>
+      </div>
+      <div class="slide">
+        <img src="img_8.jpeg" alt="CCTV Installation" />
+        <div class="slide-caption">Reinforced Concrete</div>
+      </div>
+      <div class="slide">
+        <img src="img_11.jpeg" alt="CCTV Installation" />
+        <div class="slide-caption">CCTV Installation</div>
+      </div>
+      <button class="slide-btn slide-prev" onclick="moveSlide(-1)">&#8249;</button>
+      <button class="slide-btn slide-next" onclick="moveSlide(1)">&#8250;</button>
+    </div>
 
-  <div class="gallery-slot">
-    <img src="img_3.jpeg" alt="CCTV Installation">
-  </div>
-
-  </div>
+    <div class="slide-dots" id="slide-dots"></div>
   </div>
 </section>
 
+<!-- ── ABOUT ── -->
 <section class="section" id="about">
   <div class="section-inner">
     <div class="about-grid">
@@ -442,6 +569,7 @@
   </div>
 </section>
 
+<!-- ── CONTACT ── -->
 <section class="section section-alt" id="contact">
   <div class="section-inner">
     <div class="contact-grid">
@@ -455,7 +583,7 @@
           <div class="cinfo-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
           <div><div class="cinfo-label">Email</div><div class="cinfo-value">lightcon2024@gmail.com</div></div>
         </div>
-        <div class="cinfo-uen">UEN Registration: <strong>202433342D</strong></div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.35); margin-top:8px;">UEN Registration: <strong style="color:rgba(255,255,255,0.55)">202433342D</strong></div>
       </div>
       <div class="contact-form-card">
         <h3>Send Us a Message</h3>
@@ -475,58 +603,51 @@
 </footer>
 
 <script>
-  /** * DEVELOPER MODE ACCESS 
-   * Append ?mode=dev to the URL to enable uploads.
-   */
-  const urlParams = new URLSearchParams(window.location.search);
+  // ── SLIDESHOW ──
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('slide-dots');
+  let autoTimer;
 
-
-  if (isDev) {
-    // 1. Show the main upload button
-    
-    
-    // 2. Enable interaction on gallery slots
-    const slots = document.querySelectorAll('.gallery-slot');
-    slots.forEach(slot => {
-      slot.classList.add('dev-active');
-      slot.querySelector('p').innerText = "Click to Upload Photo";
-      slot.addEventListener('click', () => {
-        document.getElementById('gallery-upload').click();
-      });
-    });
-  }
-
-  // Gallery image handling logic
-  document.getElementById('gallery-upload').addEventListener('change', function(e) {
-    const files = Array.from(e.target.files);
-    const slots = document.querySelectorAll('.gallery-slot');
-    
-    files.forEach((file, index) => {
-      if (index >= slots.length) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const slot = slots[index];
-        slot.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = ev.target.result;
-        slot.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
   });
 
-  // Smooth scroll
+  function goToSlide(n) {
+    slides[currentSlide].classList.remove('active');
+    dotsContainer.children[currentSlide].classList.remove('active');
+    currentSlide = (n + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    dotsContainer.children[currentSlide].classList.add('active');
+    resetAuto();
+  }
+
+  function moveSlide(dir) { goToSlide(currentSlide + dir); }
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => moveSlide(1), 4000);
+  }
+
+  resetAuto();
+
+  // ── CONTACT FORM ──
+  document.querySelector('.form-submit').addEventListener('click', function() {
+    alert('Thank you! This is a demo. No message was sent.');
+  });
+
+  // ── SMOOTH SCROLL ──
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
       const target = document.querySelector(a.getAttribute('href'));
       if (target) target.scrollIntoView({ behavior: 'smooth' });
     });
-  });
-
-  // Contact form alert
-  document.querySelector('.form-submit').addEventListener('click', function() {
-    alert('Thank you! This is a demo. No message was sent.');
   });
 </script>
 </body>
